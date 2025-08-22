@@ -10,7 +10,7 @@ function App() {
   const [cards, setCards] = useState([])
   const [loading, setLoading] = useState(true)
   const [score, setScore] = useState(0)
-  const [clickedTiles, setClickedTiles] = useState(new Set())
+  const [clickedTitles, setClickedTitles] = useState(new Set())
   const [gameOver, setGameOver] = useState(false)
 
   const gf = new GiphyFetch('yle9mCoWnx5F2oPoIF2dRCrhq2n8jcq0')
@@ -20,15 +20,12 @@ function App() {
       setLoading(true)
       const { data } = await gf.search('animals', { limit: 10 })
 
-
-
       // create individual cards with Gif data (no paris yet)
       const gifCards = data.map((gif, index) => ({
         id: index,
         title: gif.title || `Card ${index + 1}`,
         image: gif.images.fixed_height.url,
         gifId: gif.id
-
       }))
 
       // duplicate cards and shuffle
@@ -41,7 +38,7 @@ function App() {
 
       setCards(cardPairs)
     } catch (err) {
-      console.error('Gifhy API Error:', err)
+      console.error('Giphy API Error:', err)
     } finally {
       setLoading(false)
     }
@@ -62,33 +59,34 @@ function App() {
 
   const startNewGame = () => {
     setScore(0)
-    setClickedTiles(new Set())
+    setClickedTitles(new Set())
     setGameOver(false)
     fetchGifs()
   }
-  // handle card click - replace clicked card and reshuffle
-  const handleCardClick = (clickedCardId) => {
 
+  // handle card click - check for duplicate titles and update score
+  const handleCardClick = (clickedCardId) => {
     if (gameOver) return
 
     const clickedCard = cards.find(card => card.id === clickedCardId)
     const cardTitle = clickedCard.title
 
     // check if this title has been clicked before
-    if (clickedTiles.has(cardTitle)) {
+    if (clickedTitles.has(cardTitle)) {
       setScore(0)
-      setClickedTiles(new Set())
+      setClickedTitles(new Set())
       setGameOver(true)
-      alert(`Game Over! clicked "${cardTitle}" again.`)
+      alert(`Game Over! You clicked "${cardTitle}" again. Score reset to 0.`)
     } else {
       const newScore = score + 1
       setScore(newScore)
-      setClickedTiles(prev => new Set([...prev, cardTitle]))
-    }
-    // Check if all unique titles have been clicked
-    if (newScore === 10) {
-      alert(`Congratulations! You've clicked all 10 unique GIFs! Final score: ${newScore}`)
-      setGameOver(true)
+      setClickedTitles(prev => new Set([...prev, cardTitle]))
+
+      // Check if all unique titles have been clicked
+      if (newScore === 10) {
+        alert(`Congratulations! You've clicked all 10 unique GIFs! Final score: ${newScore}`)
+        setGameOver(true)
+      }
     }
 
     // reshuffle all cards 
@@ -101,6 +99,7 @@ function App() {
 
     setCards(shuffledCards)
   }
+
   return (
     <div className="app">
       <div className="game-container">

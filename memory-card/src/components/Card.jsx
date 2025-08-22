@@ -1,6 +1,13 @@
-function Card({ card }) {
+function Card({ card, onClick }) {
+    const handleClick = () => {
+        console.log('Card component clicked! Card:', card)
+        if (onClick) {
+            onClick(card.id)
+        }
+    }
+
     return (
-        <div className="memory-card">
+        <div className="memory-card" onClick={handleClick}>
             <div className="card-inner">
                 <div className="card-front">
                     <img
