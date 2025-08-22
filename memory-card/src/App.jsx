@@ -9,6 +9,9 @@ import './App.css'
 function App() {
   const [cards, setCards] = useState([])
   const [loading, setLoading] = useState(true)
+  const [score, setScore] = useState(0)
+  const [clickedTiles, setClickedTiles] = useState(new Set())
+  const [gameOver, setGameOver] = useState(false)
 
   const gf = new GiphyFetch('yle9mCoWnx5F2oPoIF2dRCrhq2n8jcq0')
 
@@ -22,7 +25,7 @@ function App() {
       // create individual cards with Gif data (no paris yet)
       const gifCards = data.map((gif, index) => ({
         id: index,
-        title: gif.title || `Card $(index + 1)`,
+        title: gif.title || `Card ${index + 1}`,
         image: gif.images.fixed_height.url,
         gifId: gif.id
 
@@ -43,38 +46,6 @@ function App() {
       setLoading(false)
     }
   }
-  // // Fetch GIFs from Giphy
-  // const fetchGifs = async () => {
-  //   try {
-  //     setLoading(true)
-  //     // Fetch 8 different GIFs (for 8 pairs = 16 cards total)
-  //     const { data } = await gf.search('animals', { limit: 8 })
-
-  //     // Create card pairs with GIF data
-  //     const gifCards = data.map((gif, index) => ({
-  //       id: index,
-  //       title: gif.title || `Card ${index + 1}`,
-  //       image: gif.images.fixed_height.url,
-  //       gifId: gif.id
-  //     }))
-
-  //     // Duplicate cards to create pairs and shuffle
-  //     const cardPairs = [...gifCards, ...gifCards]
-  //       .sort(() => Math.random() - 0.5)
-  //       .map((card, index) => ({
-  //         ...card,
-  //         id: index, // Ensure unique IDs for the pairs
-  //         isFlipped: false,
-  //         isMatched: false
-  //       }))
-
-  //     setCards(cardPairs)
-  //   } catch (err) {
-  //     console.error('Giphy API Error:', err)
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
 
   // Load GIFs on component mount
   useEffect(() => {
@@ -89,12 +60,53 @@ function App() {
     )
   }
 
+  const startNewGame = () => {
+    setScore(0)
+    setClickedTiles(new Set())
+    setGameOver(false)
+    fetchGifs()
+  }
+  // handle card click - replace clicked card and reshuffle
+  const handleCardClick = (clickedCardId) => {
+
+    if (gameOver) return
+
+    const clickedCard = cards.find(card => card.id === clickedCardId)
+    const cardTitle = clickedCard.title
+
+    // check if this title has been clicked before
+    if (clickedTiles.has(cardTitle)) {
+      setScore(0)
+      setClickedTiles(new Set())
+      setGameOver(true)
+      alert(`Game Over! clicked "${cardTitle}" again.`)
+    } else {
+      const newScore = score + 1
+      setScore(newScore)
+      setClickedTiles(prev => new Set([...prev, cardTitle]))
+    }
+    // Check if all unique titles have been clicked
+    if (newScore === 10) {
+      alert(`Congratulations! You've clicked all 10 unique GIFs! Final score: ${newScore}`)
+      setGameOver(true)
+    }
+
+    // reshuffle all cards 
+    const shuffledCards = [...cards]
+      .sort(() => Math.random() - 0.5)
+      .map((card, index) => ({
+        ...card,
+        id: card.id
+      }))
+
+    setCards(shuffledCards)
+  }
   return (
     <div className="app">
       <div className="game-container">
         <Header />
-        <Scoreboard />
-        <GameBoard cards={cards} />
+        <Scoreboard score={score} gameOver={gameOver} onNewGame={startNewGame} />
+        <GameBoard cards={cards} onCardClick={handleCardClick} />
         <Modal />
       </div>
     </div>

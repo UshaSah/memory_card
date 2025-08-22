@@ -1,6 +1,6 @@
 import Card from './Card'
 
-function GameBoard({ cards }) {
+function GameBoard({ cards, onCardClick }) {
     return (
         <div className="cards-grid">
             {cards.length > 0 ? (
@@ -8,6 +8,7 @@ function GameBoard({ cards }) {
                     <Card
                         key={card.id}
                         card={card}
+                        onClick={() => onCardClick(card.id)}
                     />
                 ))
             ) : (

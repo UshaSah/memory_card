@@ -30,15 +30,15 @@ button:focus {
 
 .app {
   width: 100vw;
-  height: 100vh;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .game-container {
@@ -53,6 +53,7 @@ button:focus {
 .game-header {
   text-align: center;
   margin-bottom: 30px;
+  padding-top: 20px;
 }
 
 .game-title {
@@ -63,7 +64,7 @@ button:focus {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-game-stats {
+.game-stats {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -75,7 +76,7 @@ game-stats {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-reset-button {
+.reset-button {
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
