@@ -17,6 +17,8 @@ function App() {
       setLoading(true)
       const { data } = await gf.search('animals', { limit: 10 })
 
+
+
       // create individual cards with Gif data (no paris yet)
       const gifCards = data.map((gif, index) => ({
         id: index,
@@ -25,7 +27,16 @@ function App() {
         gifId: gif.id
 
       }))
-      setCards(gifCards)
+
+      // duplicate cards and shuffle
+      const cardPairs = [...gifCards, ...gifCards]
+        .sort(() => Math.random() - 0.5)
+        .map((card, index) => ({
+          ...card,
+          id: index
+        }))
+
+      setCards(cardPairs)
     } catch (err) {
       console.error('Gifhy API Error:', err)
     } finally {
